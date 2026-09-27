@@ -1,7 +1,11 @@
 package com.divergent.genesis
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.*
@@ -45,6 +49,7 @@ class MainActivity : ComponentActivity() {
             MaterialTheme(colorScheme = darkColorScheme(background = DeepBlack, surface = DarkGrey)) {
                 val prefs = getSharedPreferences("genesis_prefs", Context.MODE_PRIVATE)
                 var apiKey by remember { mutableStateOf(prefs.getString("api_key", "") ?: "") }
+                var showOverlay by remember { mutableStateOf(false) }
 
                 if (apiKey.isEmpty()) {
                     ApiKeyScreen(onSave = { key ->
@@ -52,10 +57,27 @@ class MainActivity : ComponentActivity() {
                         apiKey = key
                     })
                 } else {
-                    GenesisApp(apiKey, onLogout = {
-                        prefs.edit().remove("api_key").apply()
-                        apiKey = ""
-                    })
+                    GenesisApp(
+                        apiKey = apiKey,
+                        showOverlay = showOverlay,
+                        onToggleOverlay = {
+                            if (!Settings.canDrawOverlays(this)) {
+                                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+                                startActivity(intent)
+                            } else {
+                                if (showOverlay) {
+                                    stopService(Intent(this, FloatingService::class.java))
+                                } else {
+                                    startForegroundService(Intent(this, FloatingService::class.java))
+                                }
+                                showOverlay = !showOverlay
+                            }
+                        },
+                        onLogout = {
+                            prefs.edit().remove("api_key").apply()
+                            apiKey = ""
+                        }
+                    )
                 }
             }
         }
@@ -106,10 +128,9 @@ fun ApiKeyScreen(onSave: (String) -> Unit) {
     }
 }
 
-// FIX: Added OptIn for Material3 Experimental APIs (TopAppBar)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GenesisApp(apiKey: String, onLogout: () -> Unit) {
+fun GenesisApp(apiKey: String, showOverlay: Boolean, onToggleOverlay: () -> Unit, onLogout: () -> Unit) {
     val navController = rememberNavController()
     GenesisBrain.apiKey = apiKey
 
@@ -118,6 +139,13 @@ fun GenesisApp(apiKey: String, onLogout: () -> Unit) {
             TopAppBar(
                 title = { Text("Divergent Genesis", color = NeonCyan, fontWeight = FontWeight.Bold) },
                 actions = {
+                    IconButton(onClick = onToggleOverlay) {
+                        Icon(
+                            imageVector = if (showOverlay) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = "Preview Screen",
+                            tint = if (showOverlay) NeonPurple else NeonCyan
+                        )
+                    }
                     IconButton(onClick = onLogout) {
                         Icon(Icons.Default.Logout, contentDescription = "Logout", tint = Color.Gray)
                     }
