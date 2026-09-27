@@ -25,6 +25,7 @@ Actions available:
 {"action":"done"}
 If the user asks to post a Reel or video to Instagram, reply with: {"action":"run_workflow","target":"instagram_reel"}
 If the user asks to upload a Short to YouTube, reply with: {"action":"run_workflow","target":"youtube_short"}
+If the user asks to open YouTube, reply with: {"action":"open_app","target":"com.google.android.youtube"}
 Reply with JSON only. No markdown.
 """
 
@@ -45,7 +46,18 @@ Reply with JSON only. No markdown.
             .build()
         client.newCall(req).execute().use { resp ->
             val body = resp.body?.string() ?: "{}"
-            val content = JSONObject(body).getJSONArray("choices").getJSONObject(0)
+            
+            // NEW: Show the actual API error in the chat
+            if (!resp.isSuccessful) {
+                throw Exception("API Error: $body")
+            }
+            
+            val jsonBody = JSONObject(body)
+            if (!jsonBody.has("choices")) {
+                throw Exception("Invalid Response: $body")
+            }
+            
+            val content = jsonBody.getJSONArray("choices").getJSONObject(0)
                 .getJSONObject("message").getString("content")
             val cleaned = content.trim().removePrefix("```json").removePrefix("```").removeSuffix("```").trim()
             JSONObject(cleaned)
