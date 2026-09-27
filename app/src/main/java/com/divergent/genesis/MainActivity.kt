@@ -106,6 +106,8 @@ fun ApiKeyScreen(onSave: (String) -> Unit) {
     }
 }
 
+// FIX: Added OptIn for Material3 Experimental APIs (TopAppBar)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GenesisApp(apiKey: String, onLogout: () -> Unit) {
     val navController = rememberNavController()
