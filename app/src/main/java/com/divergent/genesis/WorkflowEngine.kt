@@ -1,12 +1,12 @@
 package com.divergent.genesis
 
-import android.accessibilityservice.AccessibilityService
 import kotlinx.coroutines.delay
 
 object WorkflowEngine {
-    suspend fun runWorkflow(workflowName: String, svc: AccessibilityService?) {
+    // FIX: Changed parameter type to your custom GenesisAccessibilityService
+    suspend fun runWorkflow(workflowName: String, svc: GenesisAccessibilityService?) {
         if (svc == null) return
-        
+
         when (workflowName) {
             "instagram_reel" -> {
                 AgentState.currentTask.value = "Opening Instagram..."
@@ -25,8 +25,6 @@ object WorkflowEngine {
                 svc.findByText("Gallery")?.let { svc.tapNode(it) } ?: svc.findByText("Select")?.let { svc.tapNode(it) }
                 delay(2000)
 
-                // Note: This assumes the first video in the gallery is already selected. 
-                // Tapping the first item is highly dependent on screen resolution, but this is a start.
                 AgentState.currentTask.value = "Selecting recent video..."
                 svc.tapAt(200f, 600f) // Taps roughly the first item in the grid
                 delay(1500)
@@ -34,7 +32,7 @@ object WorkflowEngine {
                 AgentState.currentTask.value = "Proceeding..."
                 svc.findByText("Next")?.let { svc.tapNode(it) }
                 delay(2000)
-                
+
                 svc.findByText("Next")?.let { svc.tapNode(it) }
                 delay(2000)
 
@@ -47,7 +45,7 @@ object WorkflowEngine {
                 AgentState.currentTask.value = "Sharing..."
                 svc.findByText("Share")?.let { svc.tapNode(it) }
                 delay(3000)
-                
+
                 AgentState.currentTask.value = null
             }
 
@@ -69,13 +67,13 @@ object WorkflowEngine {
                 delay(2000)
 
                 AgentState.currentTask.value = "Selecting recent video..."
-                svc.tapAt(200f, 600f) // Taps roughly the first item
+                svc.tapAt(200f, 600f)
                 delay(1500)
 
                 AgentState.currentTask.value = "Proceeding..."
                 svc.findByText("Next")?.let { svc.tapNode(it) }
                 delay(2000)
-                
+
                 svc.findByText("Next")?.let { svc.tapNode(it) }
                 delay(2000)
 
