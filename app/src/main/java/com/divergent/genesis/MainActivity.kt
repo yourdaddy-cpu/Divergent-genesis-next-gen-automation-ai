@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,7 +23,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
@@ -32,7 +32,6 @@ import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 
-// --- PREMIUM COLOR PALETTE ---
 val NeonCyan = Color(0xFF00FFFF)
 val NeonPurple = Color(0xFFBF00FF)
 val DeepBlack = Color(0xFF020205)
@@ -68,10 +67,7 @@ fun ApiKeyScreen(onSave: (String) -> Unit) {
     var input by remember { mutableStateOf("") }
     Box(
         modifier = Modifier.fillMaxSize().background(
-            Brush.radialGradient(
-                colors = listOf(Color(0xFF1A1A2E), DeepBlack),
-                radius = 1500f
-            )
+            Brush.radialGradient(colors = listOf(Color(0xFF1A1A2E), DeepBlack), radius = 1500f)
         ),
         contentAlignment = Alignment.Center
     ) {
@@ -85,7 +81,6 @@ fun ApiKeyScreen(onSave: (String) -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
             Text("Initialize your neural link", color = Color.Gray, fontSize = 14.sp)
             Spacer(modifier = Modifier.height(32.dp))
-            
             OutlinedTextField(
                 value = input,
                 onValueChange = { input = it },
@@ -93,15 +88,12 @@ fun ApiKeyScreen(onSave: (String) -> Unit) {
                 placeholder = { Text("Enter OpenRouter API Key", color = Color.Gray) },
                 leadingIcon = { Icon(Icons.Default.VpnKey, contentDescription = null, tint = NeonPurple) },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NeonCyan,
-                    unfocusedBorderColor = Color.DarkGray,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
+                    focusedBorderColor = NeonCyan, unfocusedBorderColor = Color.DarkGray,
+                    focusedTextColor = Color.White, unfocusedTextColor = Color.White
                 ),
                 shape = RoundedCornerShape(12.dp)
             )
             Spacer(modifier = Modifier.height(24.dp))
-            
             Button(
                 onClick = { if (input.isNotBlank()) onSave(input) },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
@@ -135,14 +127,12 @@ fun GenesisApp(apiKey: String, onLogout: () -> Unit) {
             NavigationBar(containerColor = DarkGrey) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Share, contentDescription = "Brain") },
-                    label = { Text("Brain Graph") },
-                    selected = false,
+                    label = { Text("Brain Graph") }, selected = false,
                     onClick = { navController.navigate("graph") }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Chat, contentDescription = "Chat") },
-                    label = { Text("Genesis Chat") },
-                    selected = true,
+                    label = { Text("Genesis Chat") }, selected = true,
                     onClick = { navController.navigate("chat") }
                 )
             }
@@ -173,36 +163,24 @@ fun BrainGraphScreen() {
             val nodeCount = 12
             val radius = 350f
 
-            // Draw outer nodes and lines
             for (i in 0 until nodeCount) {
                 val angle = Math.toRadians((i * (360 / nodeCount) + rotation).toDouble())
                 val x = center.x + radius * cos(angle).toFloat()
                 val y = center.y + radius * sin(angle).toFloat()
                 val nodePos = Offset(x, y)
 
-                // Draw connecting line
-                drawLine(
-                    color = NeonCyan.copy(alpha = 0.15f),
-                    start = center,
-                    end = nodePos,
-                    strokeWidth = 2f
-                )
-                // Draw outer node
+                drawLine(color = NeonCyan.copy(alpha = 0.15f), start = center, end = nodePos, strokeWidth = 2f)
                 drawCircle(color = NeonPurple, radius = 12f, center = nodePos)
                 drawCircle(color = NeonPurple.copy(alpha = 0.3f), radius = 20f * pulse, center = nodePos, style = Stroke(width = 2f))
             }
 
-            // Draw central "Genesis" node
             drawCircle(color = NeonCyan.copy(alpha = 0.1f), radius = 100f * pulse, center = center)
             drawCircle(color = NeonCyan, radius = 25f * pulse, center = center)
             drawCircle(color = Color.White, radius = 10f, center = center)
         }
         Text(
-            "CURRENT STATE: GENESIS CORE",
-            color = NeonCyan,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 2.sp,
+            "CURRENT STATE: GENESIS CORE", color = NeonCyan, fontSize = 14.sp,
+            fontWeight = FontWeight.Bold, letterSpacing = 2.sp,
             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp)
         )
     }
@@ -232,27 +210,20 @@ fun ChatScreen() {
                                 msg.appTarget.contains("chrome") -> Icons.Default.Language
                                 else -> Icons.Default.Android
                             },
-                            contentDescription = null,
-                            tint = NeonCyan,
+                            contentDescription = null, tint = NeonCyan,
                             modifier = Modifier.size(20.dp).align(Alignment.CenterVertically).padding(end = 8.dp)
                         )
                     }
                     Surface(
                         color = if (msg.isUser) NeonPurple.copy(alpha = 0.8f) else DarkGrey,
                         shape = RoundedCornerShape(
-                            topStart = 16.dp,
-                            topEnd = 16.dp,
+                            topStart = 16.dp, topEnd = 16.dp,
                             bottomStart = if (msg.isUser) 16.dp else 4.dp,
                             bottomEnd = if (msg.isUser) 4.dp else 16.dp
                         ),
                         border = if (!msg.isUser) BorderStroke(1.dp, GlassGrey) else null
                     ) {
-                        Text(
-                            msg.text, 
-                            color = Color.White, 
-                            modifier = Modifier.padding(12.dp),
-                            fontSize = 15.sp
-                        )
+                        Text(msg.text, color = Color.White, modifier = Modifier.padding(12.dp), fontSize = 15.sp)
                     }
                 }
             }
@@ -268,17 +239,13 @@ fun ChatScreen() {
 
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
-                value = input,
-                onValueChange = { input = it },
+                value = input, onValueChange = { input = it },
                 modifier = Modifier.weight(1f),
                 placeholder = { Text("Command Genesis...", color = Color.Gray) },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NeonCyan,
-                    unfocusedBorderColor = Color.DarkGray,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedContainerColor = DarkGrey,
-                    unfocusedContainerColor = DarkGrey
+                    focusedBorderColor = NeonCyan, unfocusedBorderColor = Color.DarkGray,
+                    focusedTextColor = Color.White, unfocusedTextColor = Color.White,
+                    focusedContainerColor = DarkGrey, unfocusedContainerColor = DarkGrey
                 ),
                 shape = RoundedCornerShape(24.dp)
             )
@@ -302,11 +269,12 @@ fun ChatScreen() {
                                     }
                                     "type" -> svc?.typeText(action.getString("target"))
                                     "swipe" -> svc?.swipe(
-                                        action.getDouble("x1").toFloat(),
-                                        action.getDouble("y1").toFloat(),
-                                        action.getDouble("x2").toFloat(),
-                                        action.getDouble("y2").toFloat()
+                                        action.getDouble("x1").toFloat(), action.getDouble("y1").toFloat(),
+                                        action.getDouble("x2").toFloat(), action.getDouble("y2").toFloat()
                                     )
+                                    "run_workflow" -> {
+                                        WorkflowEngine.runWorkflow(action.getString("target"), svc)
+                                    }
                                 }
                                 messages.add(ChatMessage("Task executed: ${action.getString("action")}", false, action.optString("target", null)))
                                 AgentState.currentTask.value = null
