@@ -9,7 +9,7 @@ import org.json.JSONObject
 
 object GenesisBrain {
     private const val URL = "https://openrouter.ai/api/v1/chat/completions"
-    private const val MODEL = "meta-llama/llama-3.3-70b-instruct:free" // Free tier model
+    private const val MODEL = "meta-llama/llama-3.3-70b-instruct:free"
     var apiKey: String = ""
 
     private const val SYSTEM_PROMPT = """
