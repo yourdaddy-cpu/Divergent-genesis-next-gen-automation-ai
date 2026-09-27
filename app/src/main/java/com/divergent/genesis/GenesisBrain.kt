@@ -20,7 +20,11 @@ Actions available:
 {"action":"tap_text","target":"Subscribe"}
 {"action":"type","target":"hello world"}
 {"action":"swipe","x1":500,"y1":1500,"x2":500,"y2":500}
+{"action":"run_workflow","target":"instagram_reel"}
+{"action":"run_workflow","target":"youtube_short"}
 {"action":"done"}
+If the user asks to post a Reel or video to Instagram, reply with: {"action":"run_workflow","target":"instagram_reel"}
+If the user asks to upload a Short to YouTube, reply with: {"action":"run_workflow","target":"youtube_short"}
 Reply with JSON only. No markdown.
 """
 
