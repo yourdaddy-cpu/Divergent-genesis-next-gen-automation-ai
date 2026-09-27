@@ -16,9 +16,16 @@ class GenesisAccessibilityService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
     override fun onInterrupt() {}
 
+    private fun updateStatus(task: String, packageName: String? = null) {
+        AgentState.currentTask.value = task
+        AgentState.currentTargetApp.value = packageName
+    }
+
     fun openApp(pkg: String) {
+        updateStatus("Opening app...", pkg)
         packageManager.getLaunchIntentForPackage(pkg)?.apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); startActivity(this)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(this)
         }
     }
 
@@ -27,8 +34,10 @@ class GenesisAccessibilityService : AccessibilityService() {
     }
 
     fun tapNode(node: AccessibilityNodeInfo): Boolean {
+        updateStatus("Tapping element...", node.packageName?.toString())
         if (node.isClickable) return node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-        val r = Rect(); node.getBoundsInScreen(r)
+        val r = Rect()
+        node.getBoundsInScreen(r)
         return tapAt(r.centerX().toFloat(), r.centerY().toFloat())
     }
 
@@ -40,6 +49,7 @@ class GenesisAccessibilityService : AccessibilityService() {
     }
 
     fun typeText(text: String): Boolean {
+        updateStatus("Typing text...", "com.android.inputmethod")
         val focused = findFocus(AccessibilityNodeInfo.FOCUS_INPUT) ?: return false
         val args = Bundle().apply {
             putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
@@ -48,6 +58,7 @@ class GenesisAccessibilityService : AccessibilityService() {
     }
 
     fun swipe(x1: Float, y1: Float, x2: Float, y2: Float) {
+        updateStatus("Swiping screen...")
         val path = Path().apply { moveTo(x1, y1); lineTo(x2, y2) }
         val gesture = GestureDescription.Builder()
             .addStroke(GestureDescription.StrokeDescription(path, 0, 300)).build()
