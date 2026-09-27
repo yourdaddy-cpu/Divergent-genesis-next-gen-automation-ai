@@ -10,7 +10,10 @@ import org.json.JSONObject
 
 object GenesisBrain {
     private const val URL = "https://openrouter.ai/api/v1/chat/completions"
-    private const val MODEL = "meta-llama/llama-3.3-70b-instruct:free"
+    
+    // UPDATED: Changed to a currently active free model
+    private const val MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
+    
     var apiKey: String = ""
 
     private const val SYSTEM_PROMPT = """
@@ -47,7 +50,7 @@ Reply with JSON only. No markdown.
         client.newCall(req).execute().use { resp ->
             val body = resp.body?.string() ?: "{}"
             
-            // NEW: Show the actual API error in the chat
+            // Show the actual API error in the chat if the request fails
             if (!resp.isSuccessful) {
                 throw Exception("API Error: $body")
             }
