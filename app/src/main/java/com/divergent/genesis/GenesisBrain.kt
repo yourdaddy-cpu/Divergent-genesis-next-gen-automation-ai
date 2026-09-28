@@ -10,8 +10,6 @@ import org.json.JSONObject
 
 object GenesisBrain {
     private const val URL = "https://openrouter.ai/api/v1/chat/completions"
-    
-    // Current free model. If this ever goes offline, swap it for another free one from openrouter.ai/models?max_price=0
     private const val MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
     
     var apiKey: String = ""
@@ -50,27 +48,11 @@ Reply with JSON only, no markdown, no explanation.
             
         client.newCall(req).execute().use { resp ->
             val body = resp.body?.string() ?: "{}"
-            
-            // Show the actual API error in the chat if the request fails
-            if (!resp.isSuccessful) {
-                throw Exception("API Error: $body")
-            }
-            
+            if (!resp.isSuccessful) throw Exception("API Error: $body")
             val jsonBody = JSONObject(body)
-            if (!jsonBody.has("choices")) {
-                throw Exception("Invalid Response: $body")
-            }
-            
-            val content = jsonBody.getJSONArray("choices").getJSONObject(0)
-                .getJSONObject("message").getString("content")
-                
-            // Clean any accidental markdown formatting the AI might add
-            val cleaned = content.trim()
-                .removePrefix("```json")
-                .removePrefix("```")
-                .removeSuffix("```")
-                .trim()
-                
+            if (!jsonBody.has("choices")) throw Exception("Invalid Response: $body")
+            val content = jsonBody.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content")
+            val cleaned = content.trim().removePrefix("```json").removePrefix("```").removeSuffix("```").trim()
             JSONObject(cleaned)
         }
     }
