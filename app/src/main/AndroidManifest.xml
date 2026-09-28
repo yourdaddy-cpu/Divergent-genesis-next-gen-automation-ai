@@ -31,10 +31,5 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
-
-        <service
-            android:name=".FloatingService"
-            android:exported="false"
-            android:foregroundServiceType="specialUse" />
     </application>
 </manifest>
