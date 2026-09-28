@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Deep Black Background -->
+    <path
+        android:fillColor="#020205"
+        android:pathData="M0,0h108v108h-108z" />
+        
+    <!-- Connection Lines -->
+    <path
+        android:strokeColor="#3300FFFF"
+        android:strokeWidth="1.5"
+        android:pathData="M54,54 L24,30 M54,54 L84,30 M54,54 L24,78 M54,54 L84,78 M54,54 L54,20" />
+        
+    <!-- Outer Purple Nodes -->
+    <path
+        android:fillColor="#BF00FF"
+        android:pathData="M24,30 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0" />
+    <path
+        android:fillColor="#BF00FF"
+        android:pathData="M84,30 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0" />
+    <path
+        android:fillColor="#BF00FF"
+        android:pathData="M24,78 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0" />
+    <path
+        android:fillColor="#BF00FF"
+        android:pathData="M84,78 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0" />
+    <path
+        android:fillColor="#BF00FF"
+        android:pathData="M54,20 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0" />
+
+    <!-- Central Cyan Core -->
+    <path
+        android:fillColor="#00FFFF"
+        android:pathData="M54,54 m-12,0 a12,12 0 1,1 24,0 a12,12 0 1,1 -24,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,54 m-4,0 a4,4 0 1,1 8,0 a4,4 0 1,1 -8,0" />
+</vector>
