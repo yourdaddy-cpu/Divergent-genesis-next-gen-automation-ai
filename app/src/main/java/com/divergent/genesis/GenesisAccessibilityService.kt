@@ -51,17 +51,13 @@ class GenesisAccessibilityService : AccessibilityService() {
     fun typeText(text: String): Boolean {
         updateStatus("Typing text...", "com.android.inputmethod")
         val focused = findFocus(AccessibilityNodeInfo.FOCUS_INPUT) ?: return false
-        
-        // Fallback for Instagram/YouTube custom text fields
         val args = Bundle().apply {
             putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
         }
-        
-        // Try setting text directly first
         val success = focused.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
         if (success) return true
         
-        // If that fails, try pasting via clipboard (some apps block direct set text)
+        // Fallback for apps that block direct set text (Instagram, YouTube)
         val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
         val clip = android.content.ClipData.newPlainText("Genesis", text)
         clipboard.setPrimaryClip(clip)
