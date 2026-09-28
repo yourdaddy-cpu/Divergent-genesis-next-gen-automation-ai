@@ -78,7 +78,7 @@ object WorkflowEngine {
 
                 AgentState.currentTask.value = "Tapping Search..."
                 svc.findByText("Search")?.let { svc.tapNode(it) } ?: svc.findByText("Search YouTube")?.let { svc.tapNode(it) }
-                delay(2000)
+                delay(2500)
 
                 AgentState.currentTask.value = "Typing query: $param"
                 if (param != null) {
@@ -86,19 +86,20 @@ object WorkflowEngine {
                 } else {
                     svc.typeText("MrBeast")
                 }
-                delay(1500)
-                
-                AgentState.currentTask.value = "Searching..."
+                delay(1500) // Wait for keyboard to settle
+
+                // FIX: Tap the "Search" button on the keyboard to submit, not the mic
+                AgentState.currentTask.value = "Pressing Enter..."
                 svc.findByText("Search")?.let { svc.tapNode(it) }
-                delay(4000)
+                delay(5000) // Wait for search results
 
                 AgentState.currentTask.value = "Tapping first result..."
-                svc.tapAt(300f, 800f) 
-                delay(3000)
+                svc.tapAt(540f, 700f) 
+                delay(4000)
 
                 AgentState.currentTask.value = "Finding Subscribe button..."
                 svc.findByText("Subscribe")?.let { svc.tapNode(it) }
-                delay(2000)
+                delay(2500)
                 
                 AgentState.currentTask.value = "Subscribed!"
                 delay(1000)
