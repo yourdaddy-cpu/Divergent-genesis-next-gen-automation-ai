@@ -11,25 +11,25 @@ import org.json.JSONObject
 object GenesisBrain {
     private const val URL = "https://openrouter.ai/api/v1/chat/completions"
     
-    // UPDATED: Changed to a currently active free model
+    // Current free model. If this ever goes offline, swap it for another free one from openrouter.ai/models?max_price=0
     private const val MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
     
     var apiKey: String = ""
 
     private const val SYSTEM_PROMPT = """
 You are Divergent Genesis, an Android automation agent. Output ONLY a valid JSON action.
-Actions available:
-{"action":"open_app","target":"com.google.android.youtube"}
-{"action":"tap_text","target":"Subscribe"}
-{"action":"type","target":"hello world"}
-{"action":"swipe","x1":500,"y1":1500,"x2":500,"y2":500}
-{"action":"run_workflow","target":"instagram_reel"}
-{"action":"run_workflow","target":"youtube_short"}
-{"action":"done"}
-If the user asks to post a Reel or video to Instagram, reply with: {"action":"run_workflow","target":"instagram_reel"}
-If the user asks to upload a Short to YouTube, reply with: {"action":"run_workflow","target":"youtube_short"}
-If the user asks to open YouTube, reply with: {"action":"open_app","target":"com.google.android.youtube"}
-Reply with JSON only. No markdown.
+Known brain shortcuts:
+- To open YouTube: {"action":"open_app","target":"com.google.android.youtube"}
+- To open Instagram: {"action":"open_app","target":"com.instagram.android"}
+- To open Google: {"action":"open_url","target":"https://google.com"}
+- To post a Reel on Instagram: {"action":"run_workflow","target":"instagram_reel"}
+- To upload a YouTube Short: {"action":"run_workflow","target":"youtube_short"}
+- To search YouTube for a channel and subscribe: {"action":"run_workflow","target":"youtube_search_subscribe","param":"CHANNEL_NAME"}
+- To tap any on-screen text: {"action":"tap_text","target":"TEXT"}
+- To type into the focused field: {"action":"type","target":"TEXT"}
+- If you don't know what to do: {"action":"done"}
+If the user pastes a URL and asks to open it, reply with: {"action":"open_url","target":"THE_URL"}
+Reply with JSON only, no markdown, no explanation.
 """
 
     suspend fun decide(command: String): JSONObject = withContext(Dispatchers.IO) {
@@ -47,6 +47,7 @@ Reply with JSON only. No markdown.
             .addHeader("Content-Type", "application/json")
             .post(payload.toString().toRequestBody("application/json".toMediaType()))
             .build()
+            
         client.newCall(req).execute().use { resp ->
             val body = resp.body?.string() ?: "{}"
             
@@ -62,7 +63,14 @@ Reply with JSON only. No markdown.
             
             val content = jsonBody.getJSONArray("choices").getJSONObject(0)
                 .getJSONObject("message").getString("content")
-            val cleaned = content.trim().removePrefix("```json").removePrefix("```").removeSuffix("```").trim()
+                
+            // Clean any accidental markdown formatting the AI might add
+            val cleaned = content.trim()
+                .removePrefix("```json")
+                .removePrefix("```")
+                .removeSuffix("```")
+                .trim()
+                
             JSONObject(cleaned)
         }
     }
