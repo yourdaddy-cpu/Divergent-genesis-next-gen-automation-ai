@@ -1,6 +1,7 @@
 package com.divergent.genesis
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
@@ -147,7 +147,7 @@ fun GenesisApp(apiKey: String, onLogout: () -> Unit) {
 }
 
 // ============================================================
-//  NEURAL BRAIN CANVAS  —  pan / pinch-zoom / tap / add / delete
+//  NEURAL BRAIN CANVAS
 // ============================================================
 @Composable
 fun BrainGraphScreen() {
@@ -226,18 +226,14 @@ fun BrainGraphScreen() {
                 val color = BrainGraphManager.getColor(node.type)
                 val r = BrainGraphManager.getRadius(node.type) * scale
 
-                // Outer glow
                 drawCircle(
                     color = color.copy(alpha = 0.18f),
                     radius = r * 2f * pulse,
                     center = Offset(sx, sy)
                 )
-                // Body
                 drawCircle(color = color, radius = r, center = Offset(sx, sy))
-                // Inner highlight
                 drawCircle(color = Color.White.copy(alpha = 0.55f), radius = r * 0.3f, center = Offset(sx, sy))
 
-                // Show label when zoomed enough OR when selected
                 val isSelected = node.id == selectedNodeId
                 if (scale > 1.4f || isSelected) {
                     drawContext.canvas.nativeCanvas.drawText(
@@ -387,7 +383,7 @@ fun BrainGraphScreen() {
 }
 
 // ============================================================
-//  CHAT SCREEN  —  cleaner bubbles, thinking indicator
+//  CHAT SCREEN
 // ============================================================
 data class ChatMessage(
     val text: String,
@@ -442,4 +438,13 @@ fun ChatScreen() {
                                     modifier = Modifier.size(14.dp),
                                     color = NeonCyan, strokeWidth = 2.dp
                                 )
-                     
+                                Spacer(Modifier.width(8.dp))
+                            }
+                            Text(msg.text, color = Color.White, fontSize = 15.sp)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (curre
