@@ -146,9 +146,6 @@ fun GenesisApp(apiKey: String, onLogout: () -> Unit) {
     }
 }
 
-// ============================================================
-//  NEURAL BRAIN CANVAS
-// ============================================================
 @Composable
 fun BrainGraphScreen() {
     val nodes = BrainGraphManager.nodes
@@ -186,7 +183,8 @@ fun BrainGraphScreen() {
                             val sy = cy + it.y * scale
                             val dx = sx - tap.x
                             val dy = sy - tap.y
-                            (dx * dx + dy * dy) < (BrainGraphManager.getRadius(it.type) * scale * 2.5f).let { r -> r * r }
+                            val radius = BrainGraphManager.getRadius(it.type) * scale * 2.5f
+                            (dx * dx + dy * dy) < (radius * radius)
                         }
                         selectedNodeId = hit?.id
                     }
@@ -195,7 +193,6 @@ fun BrainGraphScreen() {
             val cx = size.width / 2f + offset.x
             val cy = size.height / 2f + offset.y
 
-            // Connection lines
             nodes.forEach { node ->
                 val parent = nodes.find { it.id == node.parentId }
                 val endX = cx + node.x * scale
@@ -219,19 +216,18 @@ fun BrainGraphScreen() {
                 }
             }
 
-            // Nodes
             nodes.forEach { node ->
                 val sx = cx + node.x * scale
                 val sy = cy + node.y * scale
-                val color = BrainGraphManager.getColor(node.type)
+                val nodeColor: Color = BrainGraphManager.getColor(node.type)
                 val r = BrainGraphManager.getRadius(node.type) * scale
 
                 drawCircle(
-                    color = color.copy(alpha = 0.18f),
+                    color = nodeColor.copy(alpha = 0.18f),
                     radius = r * 2f * pulse,
                     center = Offset(sx, sy)
                 )
-                drawCircle(color = color, radius = r, center = Offset(sx, sy))
+                drawCircle(color = nodeColor, radius = r, center = Offset(sx, sy))
                 drawCircle(color = Color.White.copy(alpha = 0.55f), radius = r * 0.3f, center = Offset(sx, sy))
 
                 val isSelected = node.id == selectedNodeId
@@ -249,7 +245,6 @@ fun BrainGraphScreen() {
                 }
             }
 
-            // Genesis Core
             drawCircle(color = Color(0xFF8B0000).copy(alpha = 0.15f), radius = 90f * pulse * scale, center = Offset(cx, cy))
             drawCircle(color = Color(0xFF8B0000), radius = 45f * scale, center = Offset(cx, cy))
             drawCircle(color = Color.White.copy(alpha = 0.8f), radius = 14f * scale, center = Offset(cx, cy))
@@ -267,7 +262,6 @@ fun BrainGraphScreen() {
             )
         }
 
-        // Floating controls
         Column(
             modifier = Modifier.align(Alignment.TopEnd).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -291,7 +285,6 @@ fun BrainGraphScreen() {
             ) { Icon(Icons.Default.CenterFocusStrong, contentDescription = "Recenter", tint = NeonCyan) }
         }
 
-        // Selected node panel
         val selected = nodes.find { it.id == selectedNodeId }
         if (selected != null) {
             Card(
@@ -330,7 +323,6 @@ fun BrainGraphScreen() {
             }
         }
 
-        // Add-node dialog
         if (showAddDialog) {
             AlertDialog(
                 onDismissRequest = { showAddDialog = false },
@@ -382,9 +374,6 @@ fun BrainGraphScreen() {
     }
 }
 
-// ============================================================
-//  CHAT SCREEN
-// ============================================================
 data class ChatMessage(
     val text: String,
     val isUser: Boolean,
@@ -447,4 +436,11 @@ fun ChatScreen() {
             }
         }
 
-        if (curre
+        if (currentTask != null) {
+            Row(
+                modifier = Modifier.padding(vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CircularProgressIndicator(modifier = Modifier.size(14.dp), color = NeonCyan, strokeWidth = 2.dp)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(currentTask!!, color = NeonCyan, fontSize
