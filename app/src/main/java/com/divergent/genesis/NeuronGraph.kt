@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import java.util.UUID
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.random.Random
 
 enum class NodeType {
     CORE, MONO_MAIN, BI_MAIN, MONO_SUB, BI_SUB, MONO_MINI
@@ -28,8 +29,8 @@ object BrainGraphManager {
     fun clear() { nodes.clear() }
 
     fun addMainNode(label: String, url: String? = null): NeuronNode {
-        val angle = (0..360).random().toFloat()
-        val radius = 420f + (0..120).random()
+        val angle = Random.nextInt(0, 361).toFloat()
+        val radius = 420f + Random.nextInt(0, 121).toFloat()
         val node = NeuronNode(
             label = label,
             url = url,
@@ -45,8 +46,8 @@ object BrainGraphManager {
 
     fun addChild(parentId: String, label: String, url: String? = null): NeuronNode? {
         val parent = nodes.find { it.id == parentId } ?: return null
-        val spread = 70f
-        val childAngle = parent.angle + (-spread..spread).random()
+        val spread = 70
+        val childAngle = parent.angle + Random.nextInt(-spread, spread + 1).toFloat()
         val childRadius = when (parent.type) {
             NodeType.MONO_MAIN -> 180f
             NodeType.BI_MAIN -> 150f
@@ -75,7 +76,6 @@ object BrainGraphManager {
         return node
     }
 
-    /** Rule: If a node gains too many children, it grows up. */
     private fun autoPromote(parentId: String) {
         val parent = nodes.find { it.id == parentId } ?: return
         val childCount = nodes.count { it.parentId == parentId }
@@ -90,7 +90,7 @@ object BrainGraphManager {
             NodeType.BI_SUB -> {
                 if (childCount > 5) {
                     val idx = nodes.indexOf(parent)
-                    nodes[idx] = parent.copy(type = NodeType.BI_MAIN)
+                    nodes[idx] = parent.copy(type = NodeType.MONO_SUB)
                 }
             }
             NodeType.MONO_SUB -> {
@@ -103,7 +103,6 @@ object BrainGraphManager {
         }
     }
 
-    /** Recursive delete: kill all descendants first, then self. */
     fun deleteNode(nodeId: String) {
         val node = nodes.find { it.id == nodeId } ?: return
         val children = nodes.filter { it.parentId == nodeId }.toList()
@@ -118,12 +117,12 @@ object BrainGraphManager {
         nodes.find { it.label.equals(label, ignoreCase = true) }
 
     fun getColor(type: NodeType): Color = when (type) {
-        NodeType.CORE      -> Color(0xFF8B0000) // Dark Deep Red
-        NodeType.MONO_MAIN -> Color(0xFF1E90FF) // Blue
-        NodeType.BI_MAIN   -> Color(0xFF00FFFF) // Cyan
-        NodeType.MONO_SUB  -> Color(0xFF32CD32) // Green
-        NodeType.BI_SUB    -> Color(0xFFFFD700) // Yellow (Suggested)
-        NodeType.MONO_MINI -> Color(0xFFFFB6C1) // Light Pink
+        NodeType.CORE      -> Color(0xFF8B0000)
+        NodeType.MONO_MAIN -> Color(0xFF1E90FF)
+        NodeType.BI_MAIN   -> Color(0xFF00FFFF)
+        NodeType.MONO_SUB  -> Color(0xFF32CD32)
+        NodeType.BI_SUB    -> Color(0xFFFFD700)
+        NodeType.MONO_MINI -> Color(0xFFFFB6C1)
     }
 
     fun getRadius(type: NodeType): Float = when (type) {
@@ -135,7 +134,6 @@ object BrainGraphManager {
         NodeType.MONO_MINI -> 9f
     }
 
-    // Seed the initial brain
     init {
         val google = addMainNode("Google", "https://google.com")
         addChild(google.id, "Search", "https://google.com/search")
