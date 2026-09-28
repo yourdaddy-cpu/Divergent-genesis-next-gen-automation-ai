@@ -57,7 +57,6 @@ class GenesisAccessibilityService : AccessibilityService() {
         val success = focused.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
         if (success) return true
         
-        // Fallback for apps that block direct set text (Instagram, YouTube)
         val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
         val clip = android.content.ClipData.newPlainText("Genesis", text)
         clipboard.setPrimaryClip(clip)
