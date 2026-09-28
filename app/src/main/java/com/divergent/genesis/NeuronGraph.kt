@@ -1,6 +1,7 @@
 package com.divergent.genesis
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.graphics.Color
 import java.util.UUID
 import kotlin.math.cos
 import kotlin.math.sin
@@ -87,9 +88,9 @@ object BrainGraphManager {
                 }
             }
             NodeType.BI_SUB -> {
-                if (childCount > 4) {
+                if (childCount > 5) {
                     val idx = nodes.indexOf(parent)
-                    nodes[idx] = parent.copy(type = NodeType.MONO_SUB)
+                    nodes[idx] = parent.copy(type = NodeType.BI_MAIN)
                 }
             }
             NodeType.MONO_SUB -> {
@@ -116,13 +117,13 @@ object BrainGraphManager {
     fun findNodeByLabel(label: String): NeuronNode? =
         nodes.find { it.label.equals(label, ignoreCase = true) }
 
-    fun getColor(type: NodeType): androidx.compose.ui.graphics.Color = when (type) {
-        NodeType.CORE      -> androidx.compose.ui.graphics.Color(0xFF8B0000)
-        NodeType.MONO_MAIN -> androidx.compose.ui.graphics.Color(0xFF1E90FF)
-        NodeType.BI_MAIN   -> androidx.compose.ui.graphics.Color(0xFF00FFFF)
-        NodeType.MONO_SUB  -> androidx.compose.ui.graphics.Color(0xFF32CD32)
-        NodeType.BI_SUB    -> androidx.compose.ui.graphics.Color(0xFFFFD700)
-        NodeType.MONO_MINI -> androidx.compose.ui.graphics.Color(0xFFFFB6C1)
+    fun getColor(type: NodeType): Color = when (type) {
+        NodeType.CORE      -> Color(0xFF8B0000) // Dark Deep Red
+        NodeType.MONO_MAIN -> Color(0xFF1E90FF) // Blue
+        NodeType.BI_MAIN   -> Color(0xFF00FFFF) // Cyan
+        NodeType.MONO_SUB  -> Color(0xFF32CD32) // Green
+        NodeType.BI_SUB    -> Color(0xFFFFD700) // Yellow (Suggested)
+        NodeType.MONO_MINI -> Color(0xFFFFB6C1) // Light Pink
     }
 
     fun getRadius(type: NodeType): Float = when (type) {
